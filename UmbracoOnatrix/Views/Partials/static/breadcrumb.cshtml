@@ -1,0 +1,50 @@
+﻿@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage
+
+@using Umbraco.Cms.Core.Routing
+@using Umbraco.Extensions
+
+@inject IPublishedUrlProvider PublishedUrlProvider
+@inject Umbraco.Cms.Web.Common.UmbracoHelper UmbracoHelper
+
+@{
+    var rootContents = UmbracoHelper.ContentAtRoot();
+    var settings = rootContents?.FirstOrDefault(x => x.ContentType.Alias == "settingsPage") ?? null;
+
+    var globeLeft = settings?.Value<IPublishedContent>("breadCrumbsImage1")?.Url() ?? "";
+    var globeRight = settings?.Value<IPublishedContent>("breadCrumbsImage2")?.Url() ?? "";
+    var currentPage = Umbraco.AssignedContentItem;
+    var selection = Model.Ancestors().ToArray();
+    var homePageDisplayName = "Home";
+    var isFirstItem = true;
+}
+
+<section class="bg-gray section-title-header" id="about-us">
+    <div class="section-title-area">
+        <img class="globeLeft" src="@globeLeft" alt="Globe Left" />
+        <div class="section-title">
+            <h2>@ViewBag.Title</h2>
+            <div class="section-nav">
+                @* Breadcrumb navigation *@
+                <nav aria-label="breadcrumb">
+
+                        @if (selection?.Length > 0)
+                        {
+                    <ul class="breadcrumb">
+                            @foreach(var item in selection.OrderBy(x => x.Level))
+                            {
+                                var displayName = isFirstItem ? homePageDisplayName : item.Name;
+                                <li class="breadcrumb-item">
+                                    <a href="@item.Url(PublishedUrlProvider)">@displayName</a>
+                                    <span class="divider">&gt;</span>
+                                </li>
+                                isFirstItem = false;
+                            }
+                        <li class="active">@Model.Name</li>
+                    </ul>
+                        }
+                </nav>
+            </div>
+        </div>
+        <img class="globeRight" src="@globeRight" alt="Globe Right" />
+    </div>
+</section>

@@ -1,0 +1,32 @@
+﻿@using Umbraco.Cms.Web.Common.PublishedModels;
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<Umbraco.Cms.Core.Models.Blocks.BlockGridItem>
+@using ContentModels = Umbraco.Cms.Web.Common.PublishedModels;
+
+@{
+	var selection = Umbraco.Content(Guid.Parse("769d5feb-f150-435b-afd5-4fa547c75872"))
+    .ChildrenOfType("serviceItemTemplate")
+    .Where(x => x.IsVisible())
+    .Take(6);
+}
+<div class="services" id="services-main">
+    <div class="container">
+        @if(selection != null)
+        {
+            <div class="card-wrapper">
+            @foreach (var item in selection)
+            {
+                var image = item?.Value<IPublishedContent>("serviceImage")?.Url() ?? "";
+                var ingress = item?.Value<string>("serviceIngress") ?? "";
+                <a href="@item.Url()">
+                    <div class="card bg-light">
+                        <h4>@item.Name</h4>
+                        <img src="@image" alt="">
+                        <p>@ingress</p>
+                    </div>
+                </a>
+            }
+            </div>
+        }
+    </div>
+</div>
+

@@ -1,12 +1,23 @@
 ﻿@using Umbraco.Cms.Web.Common.PublishedModels;
+@using Umbraco.Cms.Core
+@using Umbraco.Cms.Core.Models.PublishedContent
+@using Umbraco.Cms.Core.Routing
+@using Umbraco.Extensions
 @inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage
+
 @inject Umbraco.Cms.Web.Common.UmbracoHelper UmbracoHelper
+@inject IPublishedValueFallback PublishedValueFallback
+@inject IPublishedUrlProvider PublishedUrlProvider
+
 @{
     var rootContents = UmbracoHelper.ContentAtRoot();
     var settings = rootContents?.FirstOrDefault(x => x.ContentType.Alias == "settingsPage") ?? null;
     var siteLogotype = settings?.Value<IPublishedContent>("siteLogotype")?.Url() ?? "";
-    var siteName = settings?.Value<string>("siteName") ?? "";
+    var siteName = settings?.Value<string>("siteName") ?? "";   
+        
+    var selection = Model.Root().Children.Where(x => x.IsVisible(PublishedValueFallback)).ToArray(); 
 }
+
 
 <div class="nav-container bg-light">
     <div class="container">
@@ -14,10 +25,13 @@
             <a href="/"><img src="@siteLogotype" alt="@siteName"/></a>
         </div>
         <nav class="nav-bar">
-            <a class="nav-link">About</a>
-            <a class="nav-link">Services</a>
-            <a class="nav-link">Projects</a>
-            <a class="nav-link">Contact</a>
+            @if (selection?.Length > 0)
+            {
+                    @foreach (var item in selection)
+                    {
+                        <a class="@(item.IsAncestorOrSelf(Model) ? "nav-link active" : "nav-link")" href="@item.Url(PublishedUrlProvider)" title="@item.Name">@item.Name</a>
+                    }
+            }
         </nav>
         <div class="magnifying-glass">
             <i class="fa-solid fa-magnifying-glass"></i>
