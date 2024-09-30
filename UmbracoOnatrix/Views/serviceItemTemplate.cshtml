@@ -1,8 +1,23 @@
 ﻿@using Umbraco.Cms.Web.Common.PublishedModels;
 @inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage
+@inject Umbraco.Cms.Web.Common.UmbracoHelper UmbracoHelper
 @{
 	Layout = "mainLayout.cshtml";
 	ViewBag.Title = Model?.Value("pageTitle") ?? null;
+    var rootContents = UmbracoHelper.ContentAtRoot();
+    
+    var settings = rootContents?.FirstOrDefault(x => x.ContentType.Alias == "settingsPage") ?? null;
+    var aboutImage = settings?.Value<IPublishedContent>("aboutUsImage")?.Url() ?? ""; 
+    var formImage = settings?.Value<IPublishedContent>("inputBackgroundImage")?.Url() ?? "";
+    
+
+    bool.TryParse(ViewData["error_name"]?.ToString()!, out bool error_name);
+    bool.TryParse(ViewData["error_email"]?.ToString()!, out bool error_email);
+    bool.TryParse(ViewData["error_message"]?.ToString()!, out bool error_message);
+    bool.TryParse(ViewData["success"]?.ToString()!, out bool success);
+
+ 
+
 }
 
 <section class="services-details bg-light" id="details">
@@ -10,16 +25,30 @@
                 <div class="top-container">
                     <div class="about-us">
                         <h4>About us</h4>
-                        <img src="./images/staff-meeting.svg" alt="staff meeting">
+                        <img src="@aboutImage" alt="staff meeting">
                         <p class="ingress">Dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non </p>
                         <div class="about-footer bg-primary">
                             <h4>How can we help you?</h4>
                             <p>Online support 24/7, we are here to help you</p>
                             <div class="input-container">
-                                <input type="email" placeholder="E-mail address">
-                                <i class="fa-regular fa-envelope"></i>
+                                <form novalidate>
+                                    @using (Html.BeginUmbracoForm("SubmitEmailForm", "ContactSurface", FormMethod.Post)){
+                                        <input name="email" type="email" placeholder="E-mail address" value="@ViewData["email"]">
+                                        @if(error_email){
+                                            <span class="form-input-error"><i style="font-size: 22px; margin-top: 2px; color: red;" class="fa-regular fa-circle-xmark"></i></span> 
+                                        }
+                                        else
+                                        {
+                                            <i class="fa-regular fa-envelope"></i>
+                                            <div id="form-success-message" class="form-success-message" style="color: #F2EDDC;">
+                                                @ViewData["success"]
+                                            </div>
+                                        }
+                                        <input type="submit" hidden>
+                                    }
+                                </form>
                             </div>
-                            <img class="mail-img" src="./images/about-us-mail.svg" alt="">
+                            <img class="mail-img" src="@formImage" alt="">
                         </div>
                     </div>
                     
@@ -28,14 +57,34 @@
                     </div>
                 </div>
                 <div class="bottom-container">
-                    <form action="post" novalidate >
+                    <form novalidate >
                         <h4>Have a question?</h4>
+                @using (Html.BeginUmbracoForm("SubmitServiceForm", "ContactSurface", FormMethod.Post)){
                         <div class="contact-info">
-                            <input type="text" placeholder="Name">
-                            <input type="email" placeholder="Email">
+                            <input type="text" name="name" placeholder="Name" value="@ViewData["name"]">
+                            @if(error_name){
+                                <span class="form-input-error"><i style="font-size: 22px; margin-top:20px" class="fa-regular fa-circle-xmark"></i></span>
+                            }
+                            <input type="email" name="email" placeholder="Email" value="@ViewData["email"]">
+                            @if(error_email){
+                                <span class="form-input-error"><i style="font-size: 22px; margin-top:20px" class="fa-regular fa-circle-xmark"></i></span> 
+                            }
                         </div>
-                        <textarea name="Qustion" id="" placeholder="Question"></textarea>
-                        <button type="submit" class="btn-primary">Submit</button>
+                        @if(error_message){
+                            <span class="form-input-error">Please enter a message</span> 
+                        }
+                        <textarea name="message" placeholder="Question" vale="@ViewData["message"]"></textarea>
+                        @if (ViewData["success"] is null)
+                        {
+                            <button type="submit" class="btn-primary">Submit</button>
+                        }
+                        else
+                        {
+                            <div id="form-success-message" class="form-success-message">
+                                @ViewData["success"]
+                            </div>
+                        }
+                }
                     </form>
                 </div>
             </div>

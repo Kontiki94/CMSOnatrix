@@ -1,3 +1,6 @@
+using Azure.Communication.Email;
+using UmbracoOnatrix.Services;
+
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 builder.CreateUmbracoBuilder()
@@ -6,6 +9,8 @@ builder.CreateUmbracoBuilder()
     .AddDeliveryApi()
     .AddComposers()
     .Build();
+
+builder.Services.AddSingleton<EmailService>();
 
 WebApplication app = builder.Build();
 

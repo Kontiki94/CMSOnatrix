@@ -1,0 +1,25 @@
+﻿@using Umbraco.Cms.Web.Common.PublishedModels;
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<Umbraco.Cms.Core.Models.Blocks.BlockGridItem>
+@using ContentModels = Umbraco.Cms.Web.Common.PublishedModels;
+
+@{
+    var slides = Model.Content.Value<IEnumerable<Umbraco.Cms.Core.Models.Blocks.BlockListItem>>("teamSlides");
+}
+
+@if(slides != null)
+{
+        <div class="team-box-slider">
+            @foreach(var slide in slides){
+
+                var image = slide?.Content.Value<IPublishedContent>("expertImage")?.Url();
+                var name = slide?.Content.Value<string>("expertName") ?? "";
+                var position = slide?.Content.Value<string>("expertPosition") ?? null;
+
+                <div class="box">
+                    <img src="@image"/>
+                    <p class="team-member-name">@name</p>
+                    <p class="team-member-position">@position</p>
+                </div>
+            }
+        </div>
+}

@@ -1,0 +1,30 @@
+﻿@using Umbraco.Cms.Web.Common.PublishedModels;
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage
+
+@{
+	var selection = Umbraco.Content(Guid.Parse("4e40c3c9-509c-4923-94b6-5ebb51053830"))
+    .ChildrenOfType("projectItemTemplate")
+    .Where(x => x.IsVisible())
+    .OrderByDescending(x => x.CreateDate)
+	.Take(4);
+}
+
+@foreach (var item in selection)
+{
+	var pageTitle = item?.Value<string>("pageTitle") ?? "";
+	var projectImage = item?.Value<IPublishedContent>("projectImage")?.Url() ?? "";
+	var projectDate = item?.Value<DateTime>("projectDate").ToString("MMMM d, yyyy");
+
+
+		<a href="@item.Url()">
+			<img src="@projectImage"/>
+			<div class="projects-info">
+				<p>@pageTitle</p>
+				<div class="date">
+					<i class="fa-regular fa-calendar-days"></i>
+					<p class="date-text">@projectDate</p>
+				</div>
+			</div>
+		</a>
+}
+

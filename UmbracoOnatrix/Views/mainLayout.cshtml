@@ -34,10 +34,23 @@
 					@await Html.PartialAsync("partials/static/breadcrumb.cshtml")
 				}
             </header>
+			@if(currentPage.Name == "Contact"){
+				@await Html.PartialAsync("partials/static/contactFooter.cshtml")
 			<main>
 				@RenderBody()
 			</main>
-			@await Html.PartialAsync("partials/static/footer.cshtml")
+				@await Html.PartialAsync("partials/static/footer.cshtml")
+			}
+			else{
+				<main>
+					@RenderBody()
+				</main>
+				@if(!string.IsNullOrEmpty(ViewBag.Title) && currentPage.Level > 1)
+				{
+					@await Html.PartialAsync("partials/static/contactFooter.cshtml")
+				}
+				@await Html.PartialAsync("partials/static/footer.cshtml")
+			}
 		</div>
 	</body>
 </html>

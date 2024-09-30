@@ -1,0 +1,26 @@
+﻿@using Umbraco.Cms.Web.Common.PublishedModels;
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<Umbraco.Cms.Core.Models.Blocks.BlockGridItem>
+@using ContentModels = Umbraco.Cms.Web.Common.PublishedModels;
+@using Umbraco.Cms.Core.PropertyEditors.ValueConverters;
+
+@{
+	var selection = Umbraco.Content(Guid.Parse("4e40c3c9-509c-4923-94b6-5ebb51053830"))
+    .ChildrenOfType("projectItemTemplate")
+    .Where(x => x.IsVisible())
+    .Take(4);
+}
+
+<div class="home-projects">
+    @foreach (var item in selection)
+    {
+        var image = item?.Value<IPublishedContent>("projectImage")?.Url() ?? "";
+        var projectCategory = item?.Value<string>("projectCategory") ?? "";
+        <div class="project-card ">
+                <img src="@image" alt=""/>
+                <a href="@item.Url()" class="card-footer">
+                <h5>@item.Name</h5>
+                <p>projectCategory</p>
+                </a>
+        </div>
+    }
+</div>
