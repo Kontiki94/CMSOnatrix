@@ -27,11 +27,28 @@
         <nav class="nav-bar">
             @if (selection?.Length > 0)
             {
-                    @foreach (var item in selection)
-                    {
-                        <a class="@(item.IsAncestorOrSelf(Model) ? "nav-link active" : "nav-link")" href="@item.Url(PublishedUrlProvider)" title="@item.Name">@item.Name</a>
-                    }
+                @foreach (var item in selection)
+                {
+                    <a class="@(item.IsAncestorOrSelf(Model) ? "nav-link active" : "nav-link")" href="@item.Url(PublishedUrlProvider)" title="@item.Name">@item.Name</a>
+                }
             }
+        </nav>
+        <nav class="hamburger-menu" role="navigation">
+            <div class="menuToggle">
+            <input type="checkbox"/>
+            <span></span>
+            <span></span>
+            <span></span>
+            <ul class="menuItem">
+            @if (selection?.Length > 0)
+            {
+                @foreach (var item in selection)
+                {
+                    <li><a class="@(item.IsAncestorOrSelf(Model) ? "nav-link active" : "nav-link")" href="@item.Url(PublishedUrlProvider)" title="@item.Name">@item.Name</a></li>
+                }
+            }
+            </ul>
+            </div>
         </nav>
         <div class="magnifying-glass">
             <i class="fa-solid fa-magnifying-glass"></i>
