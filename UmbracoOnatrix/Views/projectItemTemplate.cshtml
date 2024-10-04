@@ -1,10 +1,20 @@
 ﻿@using Umbraco.Cms.Web.Common.PublishedModels;
 @inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage
+@inject Umbraco.Cms.Web.Common.UmbracoHelper UmbracoHelper
 @{
 	Layout = "mainLayout.cshtml";
 	ViewBag.Title = Model?.Value("pageTitle") ?? null;
 
     var date = Model?.Value<DateTime>("projectDate").ToString("yyyy-MM-dd") ?? null;
+
+    var rootContents = UmbracoHelper.ContentAtRoot();
+    
+    var settings = rootContents?.FirstOrDefault(x => x.ContentType.Alias == "settingsPage") ?? null;
+    var formImage = settings?.Value<IPublishedContent>("inputBackgroundImage")?.Url() ?? "";
+    
+
+    bool.TryParse(ViewData["error_email"]?.ToString()!, out bool error_email);
+    bool.TryParse(ViewData["success"]?.ToString()!, out bool success);
 }
 
     <section class="projects-details container">
@@ -38,10 +48,24 @@
                     <h4>How can we help you?</h4>
                     <p>Online support 24/7, we are here to help you</p>
                     <div class="input-container">
-                        <input type="email" placeholder="E-mail address">
-                        <i class="fa-regular fa-envelope"></i>
+                        <form novalidate>
+                            @using (Html.BeginUmbracoForm("SubmitEmailForm", "ContactSurface", FormMethod.Post)){
+                                <input name="email" type="email" placeholder="E-mail address" value="@ViewData["email"]">
+                                @if(error_email){
+                                    <span class="form-input-error"><i style="font-size: 22px; margin-top: 2px; color: red;" class="fa-regular fa-circle-xmark"></i></span> 
+                                }
+                                else
+                                {
+                                    <i class="fa-regular fa-envelope"></i>
+                                    <div id="form-success-message" class="form-success-message" style="color: #F2EDDC;">
+                                        @ViewData["success"]
+                                    </div>
+                                }
+                                <input type="submit" hidden>
+                            }
+                        </form>
                     </div>
-                    <img class="mail-img" src="./images/about-us-mail.svg" alt="">
+                    <img class="mail-img" src="@formImage" alt="">
                 </div>
             </div>
         </div>
